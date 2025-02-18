@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Modal, FlatList, Platform, StatusBar } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Modal, FlatList, ScrollView, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
 
@@ -55,86 +55,90 @@ export default function HomePage() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: Platform.OS === 'ios' ? 40 : StatusBar.currentHeight }]}> {/* Added safe area padding */}
-      <Text style={styles.title}>Generate Your Meal Plan</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : null} style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+        <Text style={styles.title}>Generate Your Meal Plan</Text>
 
-      {/* Weight Slider */}
-      <Text>Weight (kg): {weight}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={40}
-        maximumValue={150}
-        step={1}
-        value={weight}
-        onValueChange={value => setWeight(value)}
-      />
+        {/* Weight Slider */}
+        <Text>Weight (kg): {weight}</Text>
+        <Slider
+          style={styles.slider}
+          minimumValue={40}
+          maximumValue={150}
+          step={1}
+          value={weight}
+          onValueChange={value => setWeight(value)}
+        />
 
-      {/* Height Slider */}
-      <Text>Height (cm): {height}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={140}
-        maximumValue={220}
-        step={1}
-        value={height}
-        onValueChange={value => setHeight(value)}
-      />
+        {/* Height Slider */}
+        <Text>Height (cm): {height}</Text>
+        <Slider
+          style={styles.slider}
+          minimumValue={140}
+          maximumValue={220}
+          step={1}
+          value={height}
+          onValueChange={value => setHeight(value)}
+        />
 
-      {/* Age Slider */}
-      <Text>Age: {age}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={10}
-        maximumValue={100}
-        step={1}
-        value={age}
-        onValueChange={value => setAge(value)}
-      />
+        {/* Age Slider */}
+        <Text>Age: {age}</Text>
+        <Slider
+          style={styles.slider}
+          minimumValue={10}
+          maximumValue={100}
+          step={1}
+          value={age}
+          onValueChange={value => setAge(value)}
+        />
 
-      {/* Gender Dropdown Alternative */}
-      <Text>Gender:</Text>
-      <TouchableOpacity style={styles.dropdown} onPress={() => openModal('gender')}>
-        <Text>{gender}</Text>
-      </TouchableOpacity>
+        {/* Gender Dropdown Alternative */}
+        <Text>Gender:</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={() => openModal('gender')}>
+          <Text>{gender}</Text>
+        </TouchableOpacity>
 
-      {/* Weight Goal Dropdown Alternative */}
-      <Text>Weight Goal:</Text>
-      <TouchableOpacity style={styles.dropdown} onPress={() => openModal('goal')}>
-        <Text>{goal}</Text>
-      </TouchableOpacity>
+        {/* Weight Goal Dropdown Alternative */}
+        <Text>Weight Goal:</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={() => openModal('goal')}>
+          <Text>{goal}</Text>
+        </TouchableOpacity>
 
-      {/* Activity Level Dropdown Alternative */}
-      <Text>Activity Level:</Text>
-      <TouchableOpacity style={styles.dropdown} onPress={() => openModal('activity')}>
-        <Text>{activity}</Text>
-      </TouchableOpacity>
+        {/* Activity Level Dropdown Alternative */}
+        <Text>Activity Level:</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={() => openModal('activity')}>
+          <Text>{activity}</Text>
+        </TouchableOpacity>
 
-      {/* Dietary Preference Dropdown Alternative */}
-      <Text>Dietary Preference:</Text>
-      <TouchableOpacity style={styles.dropdown} onPress={() => openModal('dietPreference')}>
-        <Text>{dietPreference}</Text>
-      </TouchableOpacity>
+        {/* Dietary Preference Dropdown Alternative */}
+        <Text>Dietary Preference:</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={() => openModal('dietPreference')}>
+          <Text>{dietPreference}</Text>
+        </TouchableOpacity>
 
-      {/* Disliked Foods Textbox */}
-      <Text>Foods You Dislike:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter foods you dislike"
-        value={dislikedFoods}
-        onChangeText={setDislikedFoods}
-      />
+        {/* Disliked Foods Textbox */}
+        <Text>Foods You Dislike:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter foods you dislike"
+          value={dislikedFoods}
+          onChangeText={setDislikedFoods}
+        />
 
-      {/* Medical Conditions Textbox */}
-      <Text>Medical Conditions:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter any medical conditions"
-        value={medicalConditions}
-        onChangeText={setMedicalConditions}
-      />
+        {/* Medical Conditions Textbox */}
+        <Text>Medical Conditions:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter any medical conditions"
+          value={medicalConditions}
+          onChangeText={setMedicalConditions}
+        />
 
-      {/* Generate Meal Plan Button */}
-      <Button title="Generate Meal Plan" onPress={generateMealPlan} />
+        {/* Generate Meal Plan Button */}
+        <View style={styles.buttonContainer}>
+          <Button title="Generate Meal Plan" onPress={generateMealPlan} />
+        </View>
+      </ScrollView>
 
       {/* Modal for Dropdown Selection */}
       <Modal visible={showModal} transparent={true} animationType="slide">
@@ -153,7 +157,7 @@ export default function HomePage() {
           </View>
         </View>
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
