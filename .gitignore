@@ -34,3 +34,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Ignore sensitive files
+.env
+utils/openAI.js
