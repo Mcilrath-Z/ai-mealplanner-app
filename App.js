@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from "@expo/vector-icons"; 
@@ -8,13 +8,17 @@ import SearchPage from './SearchPage';
 import NutrientsPage from './NutrientsPage';
 import SettingsPage from './SettingsPage';
 import GroceryList from './GroceryList';
-import FoodDetailPage from './FoodDetails'; 
+import FoodDetailPage from './FoodDetails';
+import SignUpPage from './SignUpPage';
+import LoginPage from './LoginPage';
+import WelcomePage from './WelcomePage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { auth } from "./firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Bottom tab navigator
 function TabNavigator() {
   return (
     <Tab.Navigator
@@ -45,15 +49,32 @@ function TabNavigator() {
 }
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: true }}>
-        <Stack.Screen 
-          name="Main" 
-          component={TabNavigator} 
-          options={{ headerShown: false }} // Hides tab navigator header
-        />
-        <Stack.Screen name="FoodDetail" component={FoodDetailPage} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {user ? (
+          <>
+            <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Screen name="FoodDetail" component={FoodDetailPage} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Welcome" component={WelcomePage} />
+            <Stack.Screen name="Login" component={LoginPage} />
+            <Stack.Screen name="SignUp" component={SignUpPage} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

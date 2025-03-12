@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Modal, FlatList, ScrollView, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
+import { auth, db } from "./firebaseConfig"; 
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 export default function HomePage() {
+  const navigation = useNavigation();
+
+  // User input states
   const [weight, setWeight] = useState(70);
   const [height, setHeight] = useState(170);
   const [age, setAge] = useState(30);
@@ -16,7 +21,46 @@ export default function HomePage() {
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
 
-  const navigation = useNavigation();
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        if (userData.bodyStats) {
+          setWeight(userData.bodyStats.weight);
+          setHeight(userData.bodyStats.height);
+          setAge(userData.bodyStats.age);
+          setGender(userData.bodyStats.gender);
+          setGoal(userData.bodyStats.goal);
+        }
+      }
+    };
+
+    fetchUserStats();
+  }, []);
+
+  const saveBodyStats = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const docRef = doc(db, "users", user.uid);
+    await updateDoc(docRef, {
+      bodyStats: {
+        weight: Number(weight),
+        height: Number(height),
+        age: Number(age),
+        gender,
+        goal,
+      },
+    });
+
+    alert("Your stats have been updated!");
+  };
 
   const options = {
     gender: ["Male", "Female", "Other"],
@@ -48,9 +92,7 @@ export default function HomePage() {
     setShowModal(false);
   };
 
-
   const generateMealPlan = () => {
-    //navigates to mealplanpage
     navigation.navigate('MealPlan');
   };
 
@@ -67,7 +109,7 @@ export default function HomePage() {
           maximumValue={150}
           step={1}
           value={weight}
-          onValueChange={value => setWeight(value)}
+          onValueChange={setWeight}
         />
 
         {/* Height Slider */}
@@ -78,7 +120,7 @@ export default function HomePage() {
           maximumValue={220}
           step={1}
           value={height}
-          onValueChange={value => setHeight(value)}
+          onValueChange={setHeight}
         />
 
         {/* Age Slider */}
@@ -89,7 +131,7 @@ export default function HomePage() {
           maximumValue={100}
           step={1}
           value={age}
-          onValueChange={value => setAge(value)}
+          onValueChange={setAge}
         />
 
         {/* Gender Dropdown Alternative */}
@@ -134,6 +176,11 @@ export default function HomePage() {
           onChangeText={setMedicalConditions}
         />
 
+        {/* Save Button */}
+        <View style={styles.buttonContainer}>
+          <Button title="Save Stats" onPress={saveBodyStats} />
+        </View>
+
         {/* Generate Meal Plan Button */}
         <View style={styles.buttonContainer}>
           <Button title="Generate Meal Plan" onPress={generateMealPlan} />
@@ -162,52 +209,14 @@ export default function HomePage() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#f0f0f0',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  slider: {
-    width: '100%',
-    height: 40,
-    marginBottom: 10,
-  },
-  dropdown: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    margin: 20,
-    padding: 20,
-    borderRadius: 10,
-  },
-  modalItem: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#f0f0f0' },
+  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+  slider: { width: '100%', height: 40, marginBottom: 10 },
+  dropdown: { borderWidth: 1, borderColor: '#ddd', borderRadius: 5, padding: 10, backgroundColor: '#fff', marginBottom: 10 },
+  input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 5, padding: 10, backgroundColor: '#fff', marginBottom: 10 },
+  buttonContainer: { marginBottom: 10 },
+  modalContainer: { flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+  modalContent: { backgroundColor: '#fff', margin: 20, padding: 20, borderRadius: 10 },
+  modalItem: { padding: 15, borderBottomWidth: 1, borderBottomColor: '#ddd' },
 });
+
