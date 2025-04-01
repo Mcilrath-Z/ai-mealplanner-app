@@ -1,24 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Button } from "react-native";
+import { auth, signOut } from "firebase/auth";
 
-const SettingsPage = () => {
+export default function SettingsPage({ navigation }) {
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigation.replace("Welcome");
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>This is the Settings Page</Text>
+    <View>
+      <Button title="View Profile" onPress={() => navigation.navigate("UserProfile")} />
+      <Button title="Logout" onPress={handleLogout} />
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-});
-
-export default SettingsPage;
+}

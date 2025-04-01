@@ -12,6 +12,7 @@ import FoodDetailPage from './FoodDetails';
 import SignUpPage from './SignUpPage';
 import LoginPage from './LoginPage';
 import WelcomePage from './WelcomePage';
+import UserProfile from './UserProfile'; 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { auth } from "./firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -19,6 +20,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Bottom Tab Navigator (Main App Navigation)
 function TabNavigator() {
   return (
     <Tab.Navigator
@@ -67,6 +69,7 @@ export default function App() {
           <>
             <Stack.Screen name="Main" component={TabNavigator} />
             <Stack.Screen name="FoodDetail" component={FoodDetailPage} />
+            <Stack.Screen name="UserProfile" component={UserProfile} /> 
           </>
         ) : (
           <>
